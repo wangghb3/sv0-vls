@@ -55,7 +55,7 @@ function init() {
 }
 
 function run_cloudflared() {
-    local uuid=$(uuidgen)
+    local uuid=de04add9-5c68-8bab-950c-08cd53200707
     local port=$(reserve_port)
     local id=$(echo $uuid | tr -d '-')
     local session="cf"
