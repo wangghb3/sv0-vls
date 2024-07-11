@@ -13,7 +13,6 @@ base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 function setup_services() {
     local action="${1:-xray}"
     init
-    run_cloudflared
     run_app $action
 }
 
@@ -46,6 +45,11 @@ function check_services() {
     fi
 }
 
+function reset_services() {
+    local action="${1:-xray}"
+    reset
+}
+
 function init() {
     devil binexec on
     reset
@@ -57,7 +61,7 @@ function init() {
 function run_cloudflared() {
     local uuid=de04add9-5c68-8bab-950c-08cd53200707
     local port=$(reserve_port)
-    local id=$(echo $uuid | tr -d '-')
+    local id=de04add9-5c68-8bab-950c-08cd53200711
     local session="cf"
     tmux kill-session -t $session
     tmux new-session -s $session -d "cd $base_dir/cloudflared && ./cloudflared tunnel --url localhost:$port --edge-ip-version auto --no-autoupdate -protocol http2 2>&1 | tee $base_dir/cloudflared/session_$session.log"
@@ -200,6 +204,12 @@ function run_app() {
         node)
             run_node
             ;;
+        cf)
+            run_cloudflared
+            ;;		
+        reset)
+            reset
+            ;;					
     esac
 }
 
@@ -236,6 +246,9 @@ function main() {
             ;;
         show)
             show_services $sub_action
+            ;;
+        reset)
+            reset_services 
             ;;
         *)
             echo "Usage: $0 {setup|check|show}"
