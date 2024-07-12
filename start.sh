@@ -13,7 +13,6 @@ base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 function setup_services() {
     local action="${1:-xray}"
     init
-    run_cloudflared
     run_app $action
 }
 
@@ -44,6 +43,11 @@ function check_services() {
         run_app $action
         exit 1
     fi
+}
+
+function reset_services() {
+    local action="${1:-xray}"
+    reset
 }
 
 function init() {
@@ -200,6 +204,12 @@ function run_app() {
         node)
             run_node
             ;;
+        cf)
+            run_cloudflared
+            ;;		
+        reset)
+            reset
+            ;;					
     esac
 }
 
@@ -236,6 +246,9 @@ function main() {
             ;;
         show)
             show_services $sub_action
+            ;;
+        reset)
+            reset_services 
             ;;
         *)
             echo "Usage: $0 {setup|check|show}"
